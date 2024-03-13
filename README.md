@@ -1,194 +1,146 @@
 # GitHub API Wrapper
 
-This Flask application serves as a wrapper for various GitHub API endpoints, allowing users to interact with GitHub repositories.
+This Flask application serves as a wrapper for interacting with GitHub repositories through a set of defined endpoints. It allows users to perform various operations such as searching for repositories, creating new Gists, appending data to files, editing files, deleting files, and deleting entire repositories.
 
 ## Endpoints:
 
-### 1. `GET /`
+### 1. Root Endpoint
 
-- **Description:** Root endpoint returning a greeting message.
+- **Description:** Returns a greeting message.
+- **Method:** `GET`
+- **Endpoint:** `/`
+- **Sample Response (200 OK):**
+  ```json
+  {
+    "message": "Hello, world!"
+  }
+  ```
 
-### 2. `GET /searchRepo`
+### 2. Search Repositories
 
-- **Description:** Search for repositories on GitHub based on a given topic and language.
-
+- **Description:** Searches for repositories on GitHub based on a given topic and optional language filter.
+- **Method:** `GET`
+- **Endpoint:** `/searchRepo`
 - **Parameters:**
   - `topic` (required): The topic to search for.
   - `lang` (optional): The programming language to filter by.
-
-- **Usage:**
-  ```http
-  GET /searchRepo?topic=calculator&lang=javascript
-  ```
-
-- **Sample Success Response:**
+- **Sample Response (200 OK):**
   ```json
   {
-      "code": 200,
-      "message": "First repository found",
-      "repository": {
-          "name": "user/repo-name",
-          "url": "https://github.com/user/repo-name"
-      }
+    "code": 200,
+    "message": "First repository found",
+    "repository": {
+      "name": "user/repo-name",
+      "url": "https://github.com/user/repo-name"
+    }
   }
   ```
 
-- **Sample Error Response:**
+### 3. Delete Repository
+
+- **Description:** Deletes an entire repository from GitHub.
+- **Method:** `GET`
+- **Endpoint:** `/deleteRepo`
+- **Parameters:**
+  - `repo` (required): The repository name.
+  - `token` (required): Your GitHub token.
+- **Sample Response (200 OK):**
   ```json
   {
-      "code": 404,
-      "message": "No repositories found for the given topic and language"
+    "code": 200,
+    "message": "Repository deleted successfully"
   }
   ```
 
-### 3. `GET /newGist`
+### 4. Create New Gist
 
-- **Description:** Create a new Gist on GitHub.
-
+- **Description:** Creates a new Gist on GitHub.
+- **Method:** `GET`
+- **Endpoint:** `/newGist`
 - **Parameters:**
   - `newgist` (required): The filename of the Gist.
   - `code` (required): The content of the Gist.
   - `token` (required): Your GitHub token.
-
-- **Usage:**
-  ```http
-  GET /newGist?newgist=my_gist.py&code=print('Hello, world!')&token=your_token
-  ```
-
-- **Sample Success Response:**
+- **Sample Response (201 Created):**
   ```json
   {
-      "code": 201,
-      "message": "Gist created successfully",
-      "gist_url": "https://gist.github.com/username/gist_id"
+    "code": 201,
+    "message": "Gist created successfully",
+    "gist_url": "https://gist.github.com/username/gist_id"
   }
   ```
 
-- **Sample Error Response:**
-  ```json
-  {
-      "code": 400,
-      "message": "Missing parameters: newgist, code, or token"
-  }
-  ```
+### 5. Append to Repository
 
-### 4. `GET /appendRepo`
-
-- **Description:** Append data to an existing file in a repository on GitHub, or create a new file if it doesn't exist.
-
+- **Description:** Appends data to an existing file in a repository on GitHub or creates a new file if it doesn't exist.
+- **Method:** `GET`
+- **Endpoint:** `/appendRepo`
 - **Parameters:**
   - `repo` (required): The repository name.
   - `filename` (required): The name of the file to append to.
   - `append` (required): The data to append.
   - `token` (required): Your GitHub token.
-
-- **Usage:**
-  ```http
-  GET /appendRepo?repo=user/repo-name&filename=file.txt&append=New%20content&token=your_token
-  ```
-
-- **Sample Success Response:**
+- **Sample Response (200 OK):**
   ```json
   {
-      "code": 200,
-      "message": "File updated successfully"
+    "code": 200,
+    "message": "File updated successfully"
   }
   ```
 
-- **Sample Error Response:**
-  ```json
-  {
-      "code": 404,
-      "message": "Failed to update file on GitHub"
-  }
-  ```
+### 6. Edit File
 
-### 5. `POST /editFile`
-
-- **Description:** Edit the content of a file in a repository on GitHub, overriding the existing content.
-
+- **Description:** Edits the content of a file in a repository on GitHub, overriding the existing content.
+- **Method:** `POST`
+- **Endpoint:** `/editFile`
 - **Parameters:**
   - `repo` (required): The repository name.
   - `filename` (required): The name of the file to edit.
   - `token` (required): Your GitHub token.
-  - `code` (required): The new content of the file.
-
-- **Usage:**
-  ```http
-  POST /editFile?repo=user/repo-name&filename=file.txt&token=your_token
-  ```
-
-- **Sample Success Response:**
+- **Request Body:**
   ```json
   {
-      "code": 200,
-      "message": "File updated successfully"
+    "code": "New file content"
+  }
+  ```
+- **Sample Response (200 OK):**
+  ```json
+  {
+    "code": 200,
+    "message": "File updated successfully"
   }
   ```
 
-- **Sample Error Response:**
-  ```json
-  {
-      "code": 404,
-      "message": "Failed to update file on GitHub"
-  }
-  ```
+### 7. Delete File from Repository
 
-### 6. `GET /deleteRepo`
-
-- **Description:** Delete an entire repository from GitHub.
-
+- **Description:** Deletes a file from a repository on GitHub.
+- **Method:** `GET`
+- **Endpoint:** `/deleteFile`
 - **Parameters:**
   - `repo` (required): The repository name.
+  - `filename` (required): The name of the file to delete.
   - `token` (required): Your GitHub token.
-
-- **Usage:**
-  ```http
-  GET /deleteRepo?repo=user/repo-name&token=your_token
-  ```
-
-- **Sample Success Response:**
+- **Sample Response (200 OK):**
   ```json
   {
-      "code": 200,
-      "message": "Repository deleted successfully"
+    "code": 200,
+    "message": "File deleted successfully"
   }
   ```
 
-- **Sample Error Response:**
-  ```json
-  {
-      "code": 404,
-      "message": "Failed to delete repository on GitHub"
-  }
-  ```
+### 8. Read Repository File
 
-### 7. `GET /readFile`
-
-- **Description:** Read the content of a file in a repository on GitHub.
-
+- **Description:** Reads the content of a file in a repository on GitHub.
+- **Method:** `GET`
+- **Endpoint:** `/readFile`
 - **Parameters:**
   - `repo` (required): The repository name.
   - `filename` (required): The name of the file to read.
   - `token` (required): Your GitHub token.
-
-- **Usage:**
-  ```http
-  GET /readFile?repo=user/repo-name&filename=file.txt&token=your_token
-  ```
-
-- **Sample Success Response:**
+- **Sample Response (200 OK):**
   ```json
   {
-      "code": 200,
-      "content": "File content goes here"
-  }
-  ```
-
-- **Sample Error Response:**
-  ```json
-  {
-      "code": 404,
-      "message": "File not found in the repository"
+    "code": 200,
+    "content": "File content"
   }
   ```
